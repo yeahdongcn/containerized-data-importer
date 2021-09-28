@@ -269,6 +269,7 @@ func (dp *DataProcessor) convert(url *url.URL) (ProcessingPhase, error) {
 	if imgInfo.Format == "qcow2" {
 		format = "qcow2"
 	}
+	klog.V(1).Infoln("Conversion target format", format)
 	err = qemuOperations.ConvertToStream(format, url, dp.dataFile, dp.preallocation)
 	if err != nil {
 		return ProcessingPhaseError, errors.Wrap(err, "Conversion to Raw failed")
