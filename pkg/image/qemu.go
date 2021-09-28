@@ -58,7 +58,7 @@ type ImgInfo struct {
 
 // QEMUOperations defines the interface for executing qemu subprocesses
 type QEMUOperations interface {
-	ConvertToRawStream(*url.URL, string, bool) error
+	ConvertToStream(string, *url.URL, string, bool) error
 	Resize(string, resource.Quantity, bool) error
 	Info(url *url.URL) (*ImgInfo, error)
 	Validate(*url.URL, int64, float64) error
@@ -112,8 +112,8 @@ func NewQEMUOperations() QEMUOperations {
 	return &qemuOperations{}
 }
 
-func convertToRaw(src, dest string, preallocate bool) error {
-	args := []string{"convert", "-t", "writeback", "-p", "-O", "raw", src, dest}
+func convertTo(format, src, dest string, preallocate bool) error {
+	args := []string{"convert", "-t", "writeback", "-p", "-O", format, src, dest}
 	var err error
 
 	if preallocate {
@@ -148,11 +148,11 @@ func convertToRaw(src, dest string, preallocate bool) error {
 	return nil
 }
 
-func (o *qemuOperations) ConvertToRawStream(url *url.URL, dest string, preallocate bool) error {
+func (o *qemuOperations) ConvertToStream(format string, url *url.URL, dest string, preallocate bool) error {
 	if len(url.Scheme) > 0 && url.Scheme != "nbd+unix" {
 		return fmt.Errorf("Not valid schema %s", url.Scheme)
 	}
-	return convertToRaw(url.String(), dest, preallocate)
+	return convertTo(format, url.String(), dest, preallocate)
 }
 
 // convertQuantityToQemuSize translates a quantity string into a Qemu compatible string.
@@ -252,8 +252,8 @@ func (o *qemuOperations) Validate(url *url.URL, availableSize int64, filesystemO
 }
 
 // ConvertToRawStream converts an http accessible image to raw format without locally caching the image
-func ConvertToRawStream(url *url.URL, dest string, preallocate bool) error {
-	return qemuIterface.ConvertToRawStream(url, dest, preallocate)
+func ConvertToStream(format string, url *url.URL, dest string, preallocate bool) error {
+	return qemuIterface.ConvertToStream(format, url, dest, preallocate)
 }
 
 // Validate does basic validation of a qemu image

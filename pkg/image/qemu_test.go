@@ -148,14 +148,14 @@ var _ = Describe("Convert to Raw", func() {
 
 	It("should return no error if exec function returns no error", func() {
 		replaceExecFunction(mockExecFunction("", "", nil, "convert", "-p", "-O", "raw", "source", destPath), func() {
-			err := convertToRaw("source", destPath, false)
+			err := convertTo("source", destPath, "raw", false)
 			Expect(err).NotTo(HaveOccurred())
 		})
 	})
 
 	It("should return conversion error if exec function returns error", func() {
 		replaceExecFunction(mockExecFunction("", "exit 1", nil, "convert", "-p", "-O", "raw", "source", destPath), func() {
-			err := convertToRaw("source", destPath, false)
+			err := convertTo("source", destPath, "raw", false)
 			Expect(err).To(HaveOccurred())
 			Expect(strings.Contains(err.Error(), "could not convert image to raw")).To(BeTrue())
 		})
@@ -165,7 +165,7 @@ var _ = Describe("Convert to Raw", func() {
 		replaceExecFunction(mockExecFunction("", "", nil, "convert", "-p", "-O", "raw", "/somefile/somewhere", destPath), func() {
 			ep, err := url.Parse("/somefile/somewhere")
 			Expect(err).NotTo(HaveOccurred())
-			err = ConvertToRawStream(ep, destPath, false)
+			err = ConvertToStream("raw", ep, destPath, false)
 			Expect(err).NotTo(HaveOccurred())
 		})
 	})
@@ -174,7 +174,7 @@ var _ = Describe("Convert to Raw", func() {
 		replaceExecFunction(mockExecFunctionStrict("", "", nil, "convert", "-o", "preallocation=falloc", "-t", "writeback", "-p", "-O", "raw", "/somefile/somewhere", destPath), func() {
 			ep, err := url.Parse("/somefile/somewhere")
 			Expect(err).NotTo(HaveOccurred())
-			err = ConvertToRawStream(ep, destPath, true)
+			err = ConvertToStream("raw", ep, destPath, true)
 			Expect(err).NotTo(HaveOccurred())
 		})
 	})
@@ -183,7 +183,7 @@ var _ = Describe("Convert to Raw", func() {
 		replaceExecFunction(mockExecFunctionStrict("", "", nil, "convert", "-t", "writeback", "-p", "-O", "raw", "/somefile/somewhere", destPath), func() {
 			ep, err := url.Parse("/somefile/somewhere")
 			Expect(err).NotTo(HaveOccurred())
-			err = ConvertToRawStream(ep, destPath, false)
+			err = ConvertToStream("raw", ep, destPath, false)
 			Expect(err).NotTo(HaveOccurred())
 		})
 	})

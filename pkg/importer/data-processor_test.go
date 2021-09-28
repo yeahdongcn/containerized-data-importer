@@ -548,7 +548,7 @@ func NewFakeQEMUOperations(e2, e3 error, ret4 fakeInfoOpRetVal, e5 error, e6 err
 	return &fakeQEMUOperations{e2, e3, ret4, e5, e6, targetResize}
 }
 
-func (o *fakeQEMUOperations) ConvertToRawStream(*url.URL, string, bool) error {
+func (o *fakeQEMUOperations) ConvertToStream(string, *url.URL, string, bool) error {
 	return o.e2
 }
 
