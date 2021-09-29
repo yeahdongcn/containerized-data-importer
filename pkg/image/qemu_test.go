@@ -148,14 +148,14 @@ var _ = Describe("Convert to Raw", func() {
 
 	It("should return no error if exec function returns no error", func() {
 		replaceExecFunction(mockExecFunction("", "", nil, "convert", "-p", "-O", "raw", "source", destPath), func() {
-			err := convertTo("source", destPath, "raw", false)
+			err := convertTo("raw", "source", destPath, false)
 			Expect(err).NotTo(HaveOccurred())
 		})
 	})
 
 	It("should return conversion error if exec function returns error", func() {
 		replaceExecFunction(mockExecFunction("", "exit 1", nil, "convert", "-p", "-O", "raw", "source", destPath), func() {
-			err := convertTo("source", destPath, "raw", false)
+			err := convertTo("raw", "source", destPath, false)
 			Expect(err).To(HaveOccurred())
 			Expect(strings.Contains(err.Error(), "could not convert image to raw")).To(BeTrue())
 		})
