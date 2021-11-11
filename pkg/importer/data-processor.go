@@ -260,19 +260,21 @@ func (dp *DataProcessor) convert(url *url.URL) (ProcessingPhase, error) {
 	if err != nil {
 		return ProcessingPhaseError, err
 	}
-	klog.V(3).Infoln("Converting to Raw")
 	imgInfo, err := qemuOperations.Info(url)
 	if err != nil {
 		return ProcessingPhaseError, errors.Wrap(err, "Failed to get image info")
 	}
+	size, _ := getAvailableSpaceBlockFunc(dp.dataFile)
+	klog.V(3).Infof("Available space in dataFile: %d", size)
+	isBlockDev := size >= int64(0)
 	format := "raw"
-	if imgInfo.Format == "qcow2" {
+	if !isBlockDev && imgInfo.Format == "qcow2" {
 		format = "qcow2"
 	}
-	klog.V(1).Infoln("Conversion target format", format)
+	klog.V(3).Infoln("Converting to %s", format)
 	err = qemuOperations.ConvertToStream(format, url, dp.dataFile, dp.preallocation)
 	if err != nil {
-		return ProcessingPhaseError, errors.Wrap(err, "Conversion to Raw failed")
+		return ProcessingPhaseError, errors.Wrap(err, fmt.Sprintf("Conversion to %s failed", format))
 	}
 	dp.preallocationApplied = dp.preallocation
 
